@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body { height: 100%; overflow: hidden; }
+
+#app { display: flex; flex-direction: column; height: 100vh; }
+
+/* ── NAV ─────────────────────────────────────────── */
+#nav {
+  display: flex;
+  align-items: stretch;
+  flex-shrink: 0;
+  height: 30px;
+  padding: 0 2px;
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  padding: 0 13px;
+  font-size: 10.5px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  font-family: 'SF Mono', 'Fira Mono', 'Consolas', 'Liberation Mono', monospace;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: var(--nav-color);
+  border-bottom: 1.5px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+  white-space: nowrap;
+  outline: none;
+}
+
+.tab:hover { color: var(--nav-hover); }
+
+.tab.active {
+  color: var(--nav-active);
+  border-bottom-color: var(--nav-active);
+}
+
+/* ── PAGES ───────────────────────────────────────── */
+#pages { flex: 1; overflow: hidden; position: relative; }
+
+.page {
+  display: none;
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Mode normal */
+.page.active { display: block; }
+
+/* Mode fill : la page devient un flex-col qui étire tout jusqu'en bas */
+.page.active.fill {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ── COLONNES ────────────────────────────────────── */
+.columns {
+  display: grid;
+  align-items: start;
+}
+
+/* En mode fill, la grille prend toute la hauteur restante */
+.fill > .columns {
+  flex: 1;
+  height: 0;        /* astuce flex : height:0 + flex:1 = remplir sans déborder */
+  align-items: stretch;
+}
+
+/* ── COLONNE ─────────────────────────────────────── */
+.col {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* En mode fill, la colonne suit la hauteur de la grille */
+.fill .col { min-height: 0; }
+
+/* ── BOX ─────────────────────────────────────────── */
+.box { overflow: hidden; flex-shrink: 0; }
+
+/* En mode fill, la box s'étire pour occuper toute la colonne */
+.fill .box { flex: 1; min-height: 0; }
+
+.box iframe {
+  display: block;
+  width: 100%;
+  border: none;
+}
+
+/* En mode fill, l'iframe suit la hauteur de la box */
+.fill .box iframe { height: 100% !important; }
+</style>
+</head>
+<body>
+<div id="app">
+  <nav id="nav"></nav>
+  <div id="pages"></div>
+</div>
+
+<script>
+(async () => {
+  /* ── Chargement config ───────────────────────── */
+  let cfg;
+  try {
+    const r = await fetch('config.json');
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    cfg = await r.json();
+  } catch (e) {
+    document.body.style.cssText = 'font-family:monospace;padding:24px;color:#e55';
+    document.body.innerHTML =
+      '<b>Erreur — config.json introuvable</b><br><br>' + e +
+      '<br><br>Vérifiez que config.json est à la racine du dépôt.';
+    return;
+  }
+
+  const nav    = document.getElementById('nav');
+  const pages  = document.getElementById('pages');
+  const root   = document.documentElement;
+
+  /* ── Styles nav depuis config ────────────────── */
+  const n = cfg.nav || {};
+  if (n.background) nav.style.background = n.background;
+  root.style.setProperty('--nav-color',  n.color       || '#4a4a4a');
+  root.style.setProperty('--nav-hover',  n.hoverColor  || '#888888');
+  root.style.setProperty('--nav-active', n.activeColor || '#e0e0e0');
+
+  /* ── Navigation entre pages ──────────────────── */
+  function showPage(id) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab' ).forEach(t => t.classList.remove('active'));
+    const pg = document.getElementById('pg-' + id);
+    const tb = document.querySelector('.tab[data-id="' + id + '"]');
+    if (pg) pg.classList.add('active');
+    if (tb) tb.classList.add('active');
+  }
+
+  /* ── Construction des pages ──────────────────── */
+  (cfg.pages || []).forEach((page, pi) => {
+    /* Tab */
+    const tab = document.createElement('button');
+    tab.className = 'tab' + (pi === 0 ? ' active' : '');
+    tab.textContent = page.label || page.id;
+    tab.dataset.id  = page.id;
+    tab.addEventListener('click', () => showPage(page.id));
+    nav.appendChild(tab);
+
+    /* Page */
+    const pageEl = document.createElement('div');
+    pageEl.id        = 'pg-' + page.id;
+    pageEl.className = 'page' + (pi === 0 ? ' active' : '');
+    if (page.layout === 'fill') pageEl.classList.add('fill');
+    pageEl.style.background = page.background || 'transparent';
+
+    /* Grille de colonnes */
+    const grid = document.createElement('div');
+    grid.className = 'columns';
+    const gap     = page.gap     || '8px';
+    const padding = page.padding || '8px';
+    grid.style.padding = padding;
+    grid.style.gap     = gap;
+
+    /* grid-template-columns depuis les largeurs déclarées */
+    const widths = (page.columns || []).map(c => c.width || '1fr');
+    grid.style.gridTemplateColumns = widths.join(' ');
+
+    /* Colonnes & boxes */
+    (page.columns || []).forEach(col => {
+      const colEl = document.createElement('div');
+      colEl.className  = 'col';
+      colEl.style.gap  = col.gap || gap;
+
+      (col.boxes || []).forEach(box => {
+        const boxEl = document.createElement('div');
+        boxEl.className               = 'box';
+        boxEl.style.background        = box.background   || 'transparent';
+        boxEl.style.borderRadius      = box.borderRadius !== undefined
+                                          ? box.borderRadius : '4px';
+
+        const iframe = document.createElement('iframe');
+        iframe.src    = box.src;
+        /* En mode fill la hauteur est gérée par CSS ; sinon valeur config */
+        if (page.layout !== 'fill') iframe.height = box.height || 200;
+        iframe.setAttribute('allowtransparency', 'true');
+        /* scrolling: auto par défaut, désactivable avec "scroll": false */
+        iframe.setAttribute('scrolling', box.scroll === false ? 'no' : 'auto');
+        /* Sandboxing permissif pour permettre scripts, storage, etc. */
+        iframe.setAttribute('sandbox',
+          'allow-scripts allow-same-origin allow-forms allow-popups allow-modals');
+
+        boxEl.appendChild(iframe);
+        colEl.appendChild(boxEl);
+      });
+
+      grid.appendChild(colEl);
+    });
+
+    pageEl.appendChild(grid);
+    pages.appendChild(pageEl);
+  });
+})();
+</script>
+</body>
+</html>

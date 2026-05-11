@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<!--
+  ╔══════════════════════════════════════════════════╗
+  ║  WIDGET TEMPLATE — à dupliquer pour chaque box  ║
+  ╚══════════════════════════════════════════════════╝
+
+  Ce fichier est un point de départ.
+  Renommez-le, modifiez le contenu, et référencez-le dans config.json.
+
+  RÈGLES :
+  · background: transparent sur le body → la couleur vient de config.json
+  · margin: 0 / padding: 0 sur * pour coller aux bords de la box
+  · height déclarée dans config.json = hauteur de l'iframe
+  · Utilisez localStorage pour persister des données
+  · Les scripts s'exécutent normalement (sandbox allow-scripts)
+  · fetch(), WebSocket, etc. fonctionnent
+-->
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: transparent;
+    /* ↑ Ne pas modifier : la couleur vient de config.json ("background") */
+    font-family: system-ui, sans-serif;
+    font-size: 13px;
+    color: #555;
+    padding: 16px;
+    height: 100%;
+    overflow-y: auto;
+  }
+
+  /* Votre CSS ici ↓ */
+  .label {
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #aaa;
+    margin-bottom: 12px;
+  }
+
+  .content {
+    color: #888;
+    line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+
+  <!-- Votre HTML ici ↓ -->
+  <div class="label">Widget exemple</div>
+  <div class="content">
+    Remplacez ce contenu par votre code HTML + JS.<br><br>
+    Dupliquez ce fichier dans <code>widgets/</code>,
+    puis référencez-le dans <code>config.json</code>.
+  </div>
+
+<script>
+  /* Votre JavaScript ici ↓ */
+  console.log('Widget chargé :', location.pathname);
+</script>
+</body>
+</html>

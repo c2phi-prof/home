@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 88px;
+    padding: 0 18px;
+    overflow: hidden;
+    user-select: none;
+  }
+
+  #time {
+    font-family: 'SF Mono', 'Fira Mono', 'Consolas', monospace;
+    font-size: 32px;
+    font-weight: 300;
+    letter-spacing: 0.04em;
+    color: #e0e0e0;
+    line-height: 1;
+  }
+
+  #time .sep {
+    opacity: 1;
+    animation: blink 1s step-start infinite;
+  }
+
+  @keyframes blink { 50% { opacity: 0.2; } }
+
+  #right {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  #date {
+    font-family: 'SF Mono', 'Fira Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    color: #555;
+    text-transform: uppercase;
+  }
+
+  #seconds {
+    font-family: 'SF Mono', 'Fira Mono', monospace;
+    font-size: 10px;
+    color: #333;
+    letter-spacing: 0.06em;
+  }
+</style>
+</head>
+<body>
+  <div id="time">
+    <span id="hh">00</span><span class="sep">:</span><span
+          id="mm">00</span>
+  </div>
+  <div id="right">
+    <div id="date"></div>
+    <div id="seconds">00 s</div>
+  </div>
+
+<script>
+const JOURS  = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+const MOIS   = ['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'];
+const pad    = n => String(n).padStart(2, '0');
+
+function tick() {
+  const now = new Date();
+  document.getElementById('hh').textContent      = pad(now.getHours());
+  document.getElementById('mm').textContent      = pad(now.getMinutes());
+  document.getElementById('seconds').textContent = pad(now.getSeconds()) + ' s';
+  document.getElementById('date').textContent    =
+    JOURS[now.getDay()] + ' ' + now.getDate() + ' ' + MOIS[now.getMonth()];
+}
+
+tick();
+setInterval(tick, 1000);
+</script>
+</body>
+</html>

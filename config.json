@@ -1,0 +1,110 @@
+{
+  "nav": {
+    "background": "#0a0a0a",
+    "color": "#444444",
+    "hoverColor": "#888888",
+    "activeColor": "#dddddd"
+  },
+  "pages": [
+    {
+      "id": "accueil",
+      "label": "Accueil",
+      "background": "#111111",
+      "gap": "8px",
+      "padding": "8px",
+      "columns": [
+        {
+          "width": "260px",
+          "gap": "8px",
+          "boxes": [
+            {
+              "src": "widgets/horloge.html",
+              "height": 88,
+              "background": "#1c1c1c",
+              "scroll": false
+            },
+            {
+              "src": "widgets/notes.html",
+              "height": 380,
+              "background": "#1c1c1c"
+            }
+          ]
+        },
+        {
+          "width": "1fr",
+          "gap": "8px",
+          "boxes": [
+            {
+              "src": "widgets/liens.html",
+              "height": 300,
+              "background": "#1c1c1c"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "slides",
+      "label": "Slides",
+      "layout": "fill",
+      "background": "#0d0d1a",
+      "gap": "0",
+      "padding": "0",
+      "columns": [
+        {
+          "width": "1fr",
+          "boxes": [
+            {
+              "src": "widgets/diaporama.html",
+              "background": "#0d0d1a",
+              "borderRadius": "0",
+              "scroll": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "outils",
+      "label": "Outils",
+      "background": "#f0ede8",
+      "gap": "12px",
+      "padding": "12px",
+      "columns": [
+        {
+          "width": "1fr",
+          "boxes": [
+            {
+              "src": "widgets/exemple.html",
+              "height": 300,
+              "background": "#ffffff",
+              "borderRadius": "6px"
+            }
+          ]
+        },
+        {
+          "width": "1fr",
+          "boxes": [
+            {
+              "src": "widgets/exemple.html",
+              "height": 300,
+              "background": "#ffffff",
+              "borderRadius": "6px"
+            }
+          ]
+        },
+        {
+          "width": "340px",
+          "boxes": [
+            {
+              "src": "widgets/exemple.html",
+              "height": 300,
+              "background": "#fff8f0",
+              "borderRadius": "6px"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
